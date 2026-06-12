@@ -1,0 +1,660 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  Id                     String                   @id(map: "PK_Account") @db.UniqueIdentifier
+  UserName               String?                  @db.NVarChar(100)
+  FullName               String?                  @db.NVarChar(100)
+  BirthDay               DateTime?                @db.Date
+  IdGender               Int?
+  PasswordSalt           String?                  @db.NVarChar(128)
+  Password               String?                  @db.NVarChar(128)
+  Active                 Boolean?
+  ActiveToken            String?                  @db.UniqueIdentifier
+  Phone                  String?                  @db.NVarChar(11)
+  Email                  String?                  @db.NVarChar(100)
+  Provider               String?                  @db.NVarChar(20)
+  Address                String?                  @db.NVarChar(500)
+  IdCity                 Int?
+  IdDistrict             Int?
+  LinkAvatar             String?                  @db.NVarChar(500)
+  Deleted                Int?
+  Created_By             String?                  @db.NVarChar(50)
+  Created_Date           DateTime?                @db.DateTime
+  Modified_By            String?                  @db.NVarChar(50)
+  Modified_Date          DateTime?                @db.DateTime
+  Gender                 Gender?                  @relation(fields: [IdGender], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Account_Gender")
+  AccountCertificate     AccountCertificate[]
+  AccountInRole          AccountInRole[]
+  AccountSalary          AccountSalary[]
+  AccountStudent         AccountStudent[]
+  AccountWorkingTime     AccountWorkingTime[]
+  CourseSchedule         CourseSchedule[]
+  CourseScheduleDetail   CourseScheduleDetail[]
+  CourseStudent          CourseStudent[]
+  MaterialLessonResource MaterialLessonResource[]
+  SchoolTeacher          SchoolTeacher[]
+}
+
+model AccountCertificate {
+  Id              Int       @id(map: "PK_AccountCertificate") @default(autoincrement())
+  IdAccount       String?   @db.UniqueIdentifier
+  CertificateName String?   @db.NVarChar(255)
+  Organization    String?   @db.NVarChar(255)
+  IssueDate       DateTime? @db.Date
+  ExpiryDate      DateTime? @db.Date
+  Description     String?   @db.NVarChar(500)
+  FileUrl         String?   @db.NVarChar(500)
+  CreatedDate     DateTime? @default(now(), map: "DF__AccountCe__Creat__2EDAF651") @db.DateTime
+  CreatedBy       String?   @db.NVarChar(100)
+  Account         Account?  @relation(fields: [IdAccount], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_AccountCertificate_Account")
+}
+
+model AccountInRole {
+  Id            Int          @id(map: "PK_AccountInRole") @default(autoincrement())
+  IdAccount     String?      @db.UniqueIdentifier
+  IdAccountRole Int?
+  Deleted       Int?
+  Created_By    String?      @db.NVarChar(50)
+  Created_Date  DateTime?    @db.DateTime
+  Modified_By   String?      @db.NVarChar(50)
+  Modified_Date DateTime?    @db.DateTime
+  Account       Account?     @relation(fields: [IdAccount], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_AccountInRole_Account")
+  AccountRole   AccountRole? @relation(fields: [IdAccountRole], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_AccountInRole_AccountRole")
+}
+
+model AccountRight {
+  Id                 Int                  @id(map: "PK_AccountRight") @default(autoincrement())
+  Indexes            Int?
+  RightsName         String?              @db.NVarChar(50)
+  Label              String?              @db.NVarChar(50)
+  RightsDescription  String?              @db.NVarChar(500)
+  IdRightCategory    Int?
+  Action             String?              @db.NVarChar(50)
+  Controller         String?              @db.NVarChar(50)
+  Area               String?              @db.NVarChar(50)
+  IsDefault          Boolean?
+  OrderIndex         Int?
+  Deleted            Int?
+  Created_By         String?              @db.NVarChar(50)
+  Created_Date       DateTime?            @default(now(), map: "DF_AccountRight_Created_Date") @db.DateTime
+  Modified_By        String?              @db.NVarChar(50)
+  Modified_Date      DateTime?            @default(now(), map: "DF_AccountRight_Modified_Date") @db.DateTime
+  AccountRightInRole AccountRightInRole[]
+}
+
+model AccountRightInRole {
+  Id             Int           @id(map: "PK_AccountRightInRole") @default(autoincrement())
+  IdAccountRole  Int?
+  IdAccountRight Int?
+  Deleted        Int?
+  Created_By     String?       @db.NVarChar(50)
+  Created_Date   DateTime?     @default(now(), map: "DF_AccountRightInRole_Created_Date") @db.DateTime
+  Modified_By    String?       @db.NVarChar(50)
+  Modified_Date  DateTime?     @default(now(), map: "DF_AccountRightInRole_Modified_Date") @db.DateTime
+  AccountRight   AccountRight? @relation(fields: [IdAccountRight], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_AccountRightInRole_AccountRight")
+  AccountRole    AccountRole?  @relation(fields: [IdAccountRole], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_AccountRightInRole_AccountRole")
+}
+
+model AccountRole {
+  Id                 Int                  @id(map: "PK_AccountRole") @default(autoincrement())
+  Name               String?              @db.NVarChar(100)
+  Deleted            Int?
+  Created_By         String?              @db.NVarChar(50)
+  Created_Date       DateTime?            @db.DateTime
+  Modified_By        String?              @db.NVarChar(50)
+  Modified_Date      DateTime?            @db.DateTime
+  AccountInRole      AccountInRole[]
+  AccountRightInRole AccountRightInRole[]
+}
+
+model AccountSalary {
+  Id                Int       @id(map: "PK_AccountSalary") @default(autoincrement())
+  IdAccount         String?   @db.UniqueIdentifier
+  TypeSalary        Int?      @db.TinyInt
+  TypeTeacher       Int?      @db.TinyInt
+  IdMonetaryUnit    Int?      @db.TinyInt
+  SalaryPerHour     Decimal?  @db.Decimal(10, 0)
+  SalaryPerMonth    Decimal?  @db.Decimal(10, 0)
+  WarrantyHours     Int?
+  IdPaymentMethod   Int?
+  NumberAccountBank Int?
+  Deleted           Int?
+  Created_By        String?   @db.NVarChar(50)
+  Created_Date      DateTime? @db.DateTime
+  Modified_By       String?   @db.NVarChar(50)
+  Modified_Date     DateTime? @db.DateTime
+  Account           Account?  @relation(fields: [IdAccount], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_AccountSalary_Account")
+}
+
+model AccountStudent {
+  Id                   Int                    @id(map: "PK_AccountStudent") @default(autoincrement())
+  IdAccount            String?                @db.UniqueIdentifier
+  Name                 String?                @db.NVarChar(50)
+  Gender               Int?
+  BirthDay             DateTime?              @db.Date
+  Deleted              Int?
+  Created_By           String?                @db.NVarChar(50)
+  Created_Date         DateTime?              @db.DateTime
+  Modified_By          String?                @db.NVarChar(50)
+  Modified_Date        DateTime?              @db.DateTime
+  Account              Account?               @relation(fields: [IdAccount], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_AccountStuddent_Account")
+  AccountStudentParent AccountStudentParent[]
+}
+
+model AccountStudentParent {
+  Id               Int             @id(map: "PK_AccountStudentParent") @default(autoincrement())
+  IdAccountStudent Int?
+  Name             String?         @db.NVarChar(50)
+  FullName         String?         @db.NVarChar(100)
+  BirthDay         DateTime?       @db.DateTime
+  IdGender         Int?
+  Phone            String?         @db.NVarChar(11)
+  Email            String?         @db.NVarChar(100)
+  Address          String?         @db.NVarChar(500)
+  IdCity           Int?
+  IdDistrict       Int?
+  Deleted          Int?
+  Created_By       String?         @db.NVarChar(50)
+  Created_Date     DateTime?       @db.DateTime
+  Modified_By      String?         @db.NVarChar(50)
+  Modified_Date    DateTime?       @db.DateTime
+  AccountStudent   AccountStudent? @relation(fields: [IdAccountStudent], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_AccountStuddentParent_AccountStuddent")
+}
+
+model TypeTeacher {
+  Id            Int       @id(map: "PK_AccountType") @default(autoincrement())
+  Name          String?   @db.NVarChar(100)
+  Deleted       Int?
+  Created_By    String?   @db.NVarChar(50)
+  Created_Date  DateTime? @db.DateTime
+  Modified_By   String?   @db.NVarChar(50)
+  Modified_Date DateTime? @db.DateTime
+}
+
+model MonetaryUnit {
+  Id            Int       @id(map: "PK_MonetaryUnit") @default(autoincrement())
+  Name          String?   @db.NVarChar(100)
+  Deleted       Int?
+  Created_By    String?   @db.NVarChar(50)
+  Created_Date  DateTime? @db.DateTime
+  Modified_By   String?   @db.NVarChar(50)
+  Modified_Date DateTime? @db.DateTime
+}
+
+model AccountWorkingTime {
+  Id            Int       @id(map: "PK_AccountWorkingTime") @default(autoincrement())
+  IdAccount     String?   @db.UniqueIdentifier
+  DayOfWeek     Int?      @db.TinyInt
+  FromTime      DateTime? @db.Time
+  ToTime        DateTime? @db.Time
+  Deleted       Int?
+  Created_By    String?   @db.NVarChar(50)
+  Created_Date  DateTime? @db.DateTime
+  Modified_By   String?   @db.NVarChar(50)
+  Modified_Date DateTime? @db.DateTime
+  Account       Account?  @relation(fields: [IdAccount], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_AccountWorkingTime_Account")
+}
+
+model City {
+  Id            Int        @id(map: "PK_City")
+  Name          String?    @db.NVarChar(50)
+  Deleted       Int?
+  Created_By    String?    @db.NVarChar(50)
+  Created_Date  DateTime?  @db.DateTime
+  Modified_By   String?    @db.NVarChar(50)
+  Modified_Date DateTime?  @db.DateTime
+  District      District[]
+}
+
+model Course {
+  Id                      String                    @id(map: "PK_Course") @db.NVarChar(20)
+  Name                    String?                   @db.NVarChar(200)
+  IdSchool                Int
+  IdLevel                 Int
+  LinkEnrol               String?                   @db.NVarChar(500)
+  IsOnline                Boolean?
+  LinkOnline              String?                   @db.VarChar(500)
+  Thumbnail               String?                   @db.VarChar(500)
+  Status                  Int?
+  StartDate               DateTime?                 @db.Date
+  EndDate                 DateTime?                 @db.Date
+  Deleted                 Int?
+  Created_By              String?                   @db.NVarChar(50)
+  Created_Date            DateTime?                 @db.DateTime
+  Modified_By             String?                   @db.NVarChar(50)
+  Modified_Date           DateTime?                 @db.DateTime
+  Level                   Level                     @relation(fields: [IdLevel], references: [Id], onUpdate: NoAction, map: "FK_Course_Level")
+  School                  School                    @relation(fields: [IdSchool], references: [Id], onUpdate: NoAction, map: "FK_Course_School")
+  CourseAssignment        CourseAssignment[]
+  CourseAttendanceStudent CourseAttendanceStudent[]
+  CourseAttendanceTeacher CourseAttendanceTeacher[]
+  CourseMaterial          CourseMaterial[]
+  CourseSchedule          CourseSchedule[]
+  CourseStudent           CourseStudent[]
+}
+
+model CourseAssignment {
+  Id                      Int                       @id(map: "PK_Assignment") @default(autoincrement())
+  IdCourse                String?                   @db.NVarChar(20)
+  AssignmentTitle         String?                   @db.NVarChar(500)
+  AssignmentFile          String?                   @db.NVarChar(500)
+  AssignmentDescription   String?                   @db.NVarChar(Max)
+  StartDate               DateTime?                 @db.DateTime
+  CloseDate               DateTime?                 @db.DateTime
+  IdTheme                 Int?
+  IdLesson                Int?
+  ExampleType             Int?
+  Deleted                 Int?
+  Created_By              String?                   @db.NVarChar(50)
+  Created_Date            DateTime?                 @db.DateTime
+  Modified_By             String?                   @db.NVarChar(50)
+  Modified_Date           DateTime?                 @db.DateTime
+  Course                  Course?                   @relation(fields: [IdCourse], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseAssignment_Course")
+  CourseAssignmentStudent CourseAssignmentStudent[]
+}
+
+model CourseAssignmentStudent {
+  Id                                Int                                 @id(map: "PK_AssignmentStudent") @default(autoincrement())
+  IdAssignment                      Int?
+  IdAccountStudent                  String?                             @db.UniqueIdentifier
+  IsAsign                           Int?
+  Deleted                           Int?
+  Created_By                        String?                             @db.NVarChar(50)
+  Created_Date                      DateTime?                           @db.DateTime
+  Modified_By                       String?                             @db.NVarChar(50)
+  Modified_Date                     DateTime?                           @db.DateTime
+  CourseAssignment                  CourseAssignment?                   @relation(fields: [IdAssignment], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseAssignmentStudent_CourseAssignment")
+  CourseAssignmentStudentEvaluation CourseAssignmentStudentEvaluation[]
+  CourseAssignmentSubmission        CourseAssignmentSubmission[]
+}
+
+model CourseAssignmentStudentEvaluation {
+  Id                        Int                      @id(map: "PK_CourseAssignmentStudentEvaluation") @default(autoincrement())
+  IdCourseAssignmentStudent Int?
+  IdAccountStudent          String?                  @db.UniqueIdentifier
+  Score                     Float?
+  Remake                    String?                  @db.NVarChar(Max)
+  Deleted                   Int?
+  Created_By                String?                  @db.NVarChar(50)
+  Created_Date              DateTime?                @db.DateTime
+  Modified_By               String?                  @db.NVarChar(50)
+  Modified_Date             DateTime?                @db.DateTime
+  CourseAssignmentStudent   CourseAssignmentStudent? @relation(fields: [IdCourseAssignmentStudent], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseAssignmentStudentEvaluation_CourseAssignmentStudent")
+}
+
+model CourseAssignmentSubmission {
+  Id                        Int                      @id(map: "PK_CourseAssignmentSubmission") @default(autoincrement())
+  IdCourse                  String?                  @db.NVarChar(20)
+  IdCourseAssignmentStudent Int?
+  IdAccountStudent          String?                  @db.UniqueIdentifier
+  FileUrl                   String?                  @db.NVarChar(500)
+  FileName                  String?                  @db.NVarChar(250)
+  IsLate                    Boolean?
+  Deleted                   Int?
+  Created_By                String?                  @db.NVarChar(50)
+  Created_Date              DateTime?                @db.DateTime
+  Modified_By               String?                  @db.NVarChar(50)
+  Modified_Date             DateTime?                @db.DateTime
+  CourseAssignmentStudent   CourseAssignmentStudent? @relation(fields: [IdCourseAssignmentStudent], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseAssignmentSubmission_CourseAssignmentStudent")
+}
+
+model CourseAttendanceStudent {
+  Id               Int       @id(map: "PK_CourseAttendanceStudent") @default(autoincrement())
+  IdAccount        String?   @db.UniqueIdentifier
+  IdAccountStudent String?   @db.UniqueIdentifier
+  IdCourse         String?   @db.NVarChar(20)
+  IdLevel          Int?
+  IdTheme          Int?
+  IdLesson         Int?
+  StartDate        DateTime? @db.DateTime
+  Status           Int?      @db.TinyInt
+  Deleted          Int?
+  Created_By       String?   @db.NVarChar(50)
+  Created_Date     DateTime? @db.DateTime
+  Modified_By      String?   @db.NVarChar(50)
+  Modified_Date    DateTime? @db.DateTime
+  Course           Course?   @relation(fields: [IdCourse], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseAttendanceStudent_Course")
+}
+
+model CourseAttendanceTeacher {
+  Id            Int       @id(map: "PK_CourseAttendanceTeacher") @default(autoincrement())
+  IdAccount     String?   @db.UniqueIdentifier
+  IdCourse      String?   @db.NVarChar(20)
+  IdLevel       Int?
+  IdTheme       Int?
+  IdLesson      Int?
+  StartDate     DateTime? @db.DateTime
+  Deleted       Int?
+  Created_By    String?   @db.NVarChar(50)
+  Created_Date  DateTime? @db.DateTime
+  Modified_By   String?   @db.NVarChar(50)
+  Modified_Date DateTime? @db.DateTime
+  Course        Course?   @relation(fields: [IdCourse], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseAttendanceTeacher_Course")
+}
+
+model CourseMaterial {
+  Id            Int       @id(map: "PK_CourseMaterial") @default(autoincrement())
+  IdCourse      String?   @db.NVarChar(20)
+  IdMaterial    Int?
+  Deleted       Int?
+  Created_By    String?   @db.NVarChar(50)
+  Created_Date  DateTime? @db.DateTime
+  Modified_By   String?   @db.NVarChar(50)
+  Modified_Date DateTime? @db.DateTime
+  Course        Course?   @relation(fields: [IdCourse], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseMaterial_Course")
+  Material      Material? @relation(fields: [IdMaterial], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseMaterial_Material")
+}
+
+model CourseSchedule {
+  Id                   Int                    @id(map: "PK_CourseSchedule") @default(autoincrement())
+  IdCourse             String?                @db.NVarChar(20)
+  IdAccountTeacher     String?                @db.UniqueIdentifier
+  FromDate             DateTime?              @db.Date
+  ToDate               DateTime?              @db.Date
+  Schedule             String?                @db.NVarChar(7)
+  FromTime             DateTime?              @db.Time
+  ToTime               DateTime?              @db.Time
+  Deleted              Int?
+  Created_By           String?                @db.NVarChar(50)
+  Created_Date         DateTime?              @db.DateTime
+  Modified_By          String?                @db.NVarChar(50)
+  Modified_Date        DateTime?              @db.DateTime
+  Account              Account?               @relation(fields: [IdAccountTeacher], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseSchedule_Account")
+  Course               Course?                @relation(fields: [IdCourse], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseSchedule_Course")
+  CourseScheduleDetail CourseScheduleDetail[]
+}
+
+model CourseScheduleDetail {
+  Id                Int             @id(map: "PK_CourseScheduleDetail") @default(autoincrement())
+  IdCourseSchedule  Int?
+  IdCourse          String?         @db.NVarChar(20)
+  IdAccountTeacher  String?         @db.UniqueIdentifier
+  Date              DateTime?       @db.Date
+  FromTime          DateTime?       @db.Time
+  ToTime            DateTime?       @db.Time
+  FromPeriodIndexes Int?
+  ToPeriodIndexes   Int?
+  IsOnline          Boolean?
+  LinkOnline        String?         @db.VarChar(500)
+  Status            Int?            @db.TinyInt
+  Note              String?         @db.NVarChar(500)
+  Deleted           Int?
+  Created_By        String?         @db.NVarChar(50)
+  Created_Date      DateTime?       @db.DateTime
+  Modified_By       String?         @db.NVarChar(50)
+  Modified_Date     DateTime?       @db.DateTime
+  Account           Account?        @relation(fields: [IdAccountTeacher], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseScheduleDetail_Account")
+  CourseSchedule    CourseSchedule? @relation(fields: [IdCourseSchedule], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseScheduleDetail_CourseSchedule")
+}
+
+model CourseStudent {
+  Id                  Int                   @id(map: "PK_CourseStudent") @default(autoincrement())
+  IdCourse            String?               @db.NVarChar(20)
+  IdAccountStudent    String?               @db.UniqueIdentifier
+  IsApprove           Int?
+  ApproveDate         DateTime?             @db.DateTime
+  Deleted             Int?
+  Created_By          String?               @db.NVarChar(50)
+  Modified_By         String?               @db.NVarChar(50)
+  Modified_Date       DateTime?             @db.DateTime
+  Created_Date        DateTime?             @db.DateTime
+  Account             Account?              @relation(fields: [IdAccountStudent], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseStudent_Account")
+  Course              Course?               @relation(fields: [IdCourse], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseStudent_Course")
+  CourseStudentStatus CourseStudentStatus[]
+}
+
+model CourseStudentStatus {
+  Id              Int            @id(map: "PK_CourseStudentDetail") @default(autoincrement())
+  IdCourseStudent Int?
+  Note            String?        @db.NVarChar(500)
+  Status          Int?
+  Deleted         Int?
+  Created_By      String?        @db.NVarChar(50)
+  Created_Date    DateTime?      @db.DateTime
+  Modified_By     String?        @db.NVarChar(50)
+  Modified_Date   DateTime?      @db.DateTime
+  CourseStudent   CourseStudent? @relation(fields: [IdCourseStudent], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseStudentStatus_CourseStudent")
+}
+
+model CurrencyExchange {
+  Id            Int       @id(map: "PK_MonetaryExchange") @default(autoincrement())
+  Currency      String?   @db.NVarChar(100)
+  ExchangeRate  Decimal?  @db.Decimal(10, 0)
+  Deleted       Int?
+  Created_By    String?   @db.NVarChar(50)
+  Created_Date  DateTime? @db.DateTime
+  Modified_By   String?   @db.NVarChar(50)
+  Modified_Date DateTime? @db.DateTime
+}
+
+model District {
+  Id            Int       @id(map: "PK_District")
+  Name          String?   @db.NVarChar(50)
+  IdCity        Int?
+  Deleted       Int?
+  Created_By    String?   @db.NVarChar(50)
+  Created_Date  DateTime? @db.DateTime
+  Modified_By   String?   @db.NVarChar(50)
+  Modified_Date DateTime? @db.DateTime
+  City          City?     @relation(fields: [IdCity], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_District_City")
+}
+
+model Gender {
+  Id            Int       @id(map: "PK_Gender") @default(autoincrement())
+  Name          String?   @db.NVarChar(30)
+  Deleted       Int?
+  Created_By    String?   @db.NVarChar(50)
+  Created_Date  DateTime? @db.DateTime
+  Modified_By   String?   @db.NVarChar(50)
+  Modified_Date DateTime? @db.DateTime
+  Account       Account[]
+}
+
+model Level {
+  Id            Int        @id(map: "PK_LevelCategory") @default(autoincrement())
+  Name          String?    @db.NVarChar(100)
+  Deleted       Int?
+  Created_By    String?    @db.NVarChar(50)
+  Created_Date  DateTime?  @db.DateTime
+  Modified_By   String?    @db.NVarChar(50)
+  Modified_Date DateTime?  @db.DateTime
+  Course        Course[]
+  Material      Material[]
+}
+
+model Material {
+  Id             Int              @id(map: "PK_Material") @default(autoincrement())
+  Name           String?          @db.NVarChar(100)
+  IdLevel        Int?
+  Types          Int?
+  ImageUrl       String?          @db.NVarChar(255)
+  FolderName     String?          @db.NVarChar(50)
+  Deleted        Int?
+  Created_By     String?          @db.NVarChar(50)
+  Created_Date   DateTime?        @db.DateTime
+  Modified_By    String?          @db.NVarChar(50)
+  Modified_Date  DateTime?        @db.DateTime
+  CourseMaterial CourseMaterial[]
+  Level          Level?           @relation(fields: [IdLevel], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Material_Level")
+  MaterialLesson MaterialLesson[]
+  MaterialTheme  MaterialTheme[]
+}
+
+model MaterialLesson {
+  Id                     Int                      @id(map: "PK_MaterialLesson") @default(autoincrement())
+  IdMaterial             Int?
+  Name                   String?                  @db.NVarChar(100)
+  Title                  String?                  @db.NVarChar(100)
+  IdLevel                Int?
+  IdTheme                Int?
+  FolderName             String?                  @db.NVarChar(50)
+  FileName               String?                  @db.NVarChar(100)
+  Priority               Int?
+  Deleted                Int?
+  Created_By             String?                  @db.NVarChar(50)
+  Created_Date           DateTime?                @db.DateTime
+  Modified_By            String?                  @db.NVarChar(50)
+  Modified_Date          DateTime?                @db.DateTime
+  Material               Material?                @relation(fields: [IdMaterial], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MaterialLesson_Material")
+  MaterialTheme          MaterialTheme?           @relation(fields: [IdTheme], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MaterialLesson_MaterialTheme")
+  MaterialLessonResource MaterialLessonResource[]
+}
+
+model MaterialTheme {
+  Id             Int              @id(map: "PK_MaterialTheme") @default(autoincrement())
+  IdMaterial     Int?
+  Name           String?          @db.NVarChar(100)
+  Title          String?          @db.NVarChar(100)
+  IdLevel        Int?
+  Priority       Int?
+  FolderName     String?          @db.NVarChar(50)
+  Deleted        Int?
+  Created_By     String?          @db.NVarChar(50)
+  Created_Date   DateTime?        @db.DateTime
+  Modified_By    String?          @db.NVarChar(50)
+  Modified_Date  DateTime?        @db.DateTime
+  MaterialLesson MaterialLesson[]
+  Material       Material?        @relation(fields: [IdMaterial], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MaterialTheme_Material")
+}
+
+model PaymentMethod {
+  Id            Int       @id(map: "PK_MethodPayment") @default(autoincrement())
+  Name          String?   @db.NVarChar(100)
+  Deleted       Int?
+  Created_By    String?   @db.NVarChar(50)
+  Created_Date  DateTime? @db.DateTime
+  Modified_By   String?   @db.NVarChar(50)
+  Modified_Date DateTime? @db.DateTime
+}
+
+model School {
+  Id            Int             @id(map: "PK_School") @default(autoincrement())
+  Name          String?         @db.NVarChar(100)
+  Phone         String?         @db.NVarChar(11)
+  Address       String?         @db.NVarChar(500)
+  IdCity        Int?
+  IdDistrict    Int?
+  Thumbnail     String?         @db.VarChar(500)
+  Deleted       Int?
+  Created_By    String?         @db.NVarChar(50)
+  Created_Date  DateTime?       @db.DateTime
+  Modified_By   String?         @db.NVarChar(50)
+  Modified_Date DateTime?       @db.DateTime
+  Course        Course[]
+  SchoolTeacher SchoolTeacher[]
+}
+
+model SchoolTeacher {
+  Id            Int       @id(map: "PK_SchoolTeacher") @default(autoincrement())
+  IdSchool      Int
+  IdAccount     String    @db.UniqueIdentifier
+  Deleted       Int?      @default(0)
+  Created_By    String?   @db.NVarChar(50)
+  Created_Date  DateTime? @default(now()) @db.DateTime
+  Modified_By   String?   @db.NVarChar(50)
+  Modified_Date DateTime? @db.DateTime
+  Account       Account   @relation(fields: [IdAccount], references: [Id], onUpdate: NoAction, map: "FK_SchoolTeacher_Account")
+  School        School    @relation(fields: [IdSchool], references: [Id], onUpdate: NoAction, map: "FK_SchoolTeacher_School")
+}
+
+model sysdiagrams {
+  name         String @db.NVarChar(128)
+  principal_id Int
+  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B61C7255C38") @default(autoincrement())
+  version      Int?
+  definition   Bytes?
+
+  @@unique([principal_id, name], map: "UK_principal_name")
+}
+
+model SchoolPeriod {
+  Id            Int       @id(map: "PK_SchoolPeriod") @default(autoincrement())
+  IdSchool      Int?
+  Time          Int?
+  FromTime      DateTime? @db.Time
+  ToTime        DateTime? @db.Time
+  Indexes       Int?
+  Deleted       Int?
+  Created_By    String?   @db.NVarChar(50)
+  Created_Date  DateTime? @db.DateTime
+  Modified_By   String?   @db.NVarChar(50)
+  Modified_Date DateTime? @db.DateTime
+}
+
+model MaterialLessonResource {
+  Id               Int            @id(map: "PK_MaterialLessonResource") @default(autoincrement())
+  IdMaterialLesson Int
+  IdAccount        String?        @db.UniqueIdentifier
+  IdCourse         String?        @db.NVarChar(20)
+  ResourceName     String         @db.NVarChar(250)
+  ResourceType     String         @db.VarChar(50)
+  ResourceUrl      String         @db.NVarChar(500)
+  FileSize         Int?
+  Deleted          Int?           @default(0, map: "DF_MaterialLessonResource_Deleted")
+  Created_By       String?        @db.NVarChar(50)
+  Created_Date     DateTime?      @default(now(), map: "DF_MaterialLessonResource_CreatedDate") @db.DateTime
+  Modified_By      String?        @db.NVarChar(50)
+  Modified_Date    DateTime?      @db.DateTime
+  Account          Account?       @relation(fields: [IdAccount], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MaterialLessonResource_Account")
+  MaterialLesson   MaterialLesson @relation(fields: [IdMaterialLesson], references: [Id], onUpdate: NoAction, map: "FK_MaterialLessonResource_MaterialLesson")
+
+  @@index([IdMaterialLesson, Deleted], map: "IX_MaterialLessonResource_IdMaterialLesson_Deleted")
+}
+
+model CourseScheduleDetailLesson {
+  Id                     Int       @id(map: "PK_CourseScheduleDetailLesson") @default(autoincrement())
+  IdCourseScheduleDetail Int?
+  IdMaterial             Int?
+  IdTheme                Int?
+  IdLesson               Int?
+  Deleted                Int?
+  Created_By             String?   @db.NVarChar(50)
+  Created_Date           DateTime? @db.DateTime
+  Modified_By            String?   @db.NVarChar(50)
+  Modified_Date          DateTime? @db.DateTime
+}
+
+model CourseScheduleDetailSalary {
+  Id               Int       @id(map: "PK_CourseScheduleDetailSalary") @default(autoincrement())
+  IdSchool         Int?
+  IdCourseSchedule Int?
+  IdCourse         String?   @db.NVarChar(20)
+  IdAccount        String?   @db.UniqueIdentifier
+  RoleOfSalary     Int?
+  Date             DateTime? @db.Date
+  TotalPeriods     Int?
+  TotalMinutes     Int?
+  WarrantyHours    Int?
+  TypeSalary       Int?      @db.TinyInt
+  SalaryPerMonth   Decimal?  @db.Decimal(10, 0)
+  SalaryPerHour    Decimal?  @db.Decimal(10, 0)
+  IdMonetaryUnit   Int?      @db.TinyInt
+  ExchangeRate     Decimal?  @db.Decimal(10, 0)
+  Deleted          Int?
+  Created_By       String?   @db.NVarChar(50)
+  Created_Date     DateTime? @db.DateTime
+  Modified_By      String?   @db.NVarChar(50)
+  Modified_Date    DateTime? @db.DateTime
+}
+
+model CourseStudentEvaluation {
+  Id               Int       @id(map: "PK_CourseStudentEvaluation") @default(autoincrement())
+  IdCourse         String    @db.NVarChar(20)
+  IdAccountStudent String    @db.UniqueIdentifier
+  AttendanceScore  Float?
+  AcademicScore    Float?
+  BehaviorScore    Float?
+  Comment          String?   @db.NVarChar(Max)
+  Deleted          Int?      @default(0)
+  Created_By       String?   @db.NVarChar(50)
+  Created_Date     DateTime? @default(now()) @db.DateTime
+  Modified_By      String?   @db.NVarChar(50)
+  Modified_Date    DateTime? @db.DateTime
+}

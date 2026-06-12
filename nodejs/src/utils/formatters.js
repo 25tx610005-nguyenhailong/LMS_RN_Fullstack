@@ -1,0 +1,28 @@
+import { pick } from 'lodash'
+export const slugify = (val) => {
+  if (!val) return ''
+  return String(val)
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9 -]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+}
+
+export const pickUser = (user) => {
+  if (!user) return {}
+  return {
+    id: user.Id,
+    email: user.Email,
+    username: user.UserName,
+    fullName: user.FullName,
+    avatar: user.LinkAvatar,
+    isActive: user.Active,
+    phone: user.Phone,
+    address: user.Address,
+    createdAt: user.Created_Date,
+    updatedAt: user.Modified_Date
+  }
+}

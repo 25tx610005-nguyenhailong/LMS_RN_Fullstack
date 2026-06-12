@@ -1,0 +1,29 @@
+// require('dotenv').config()
+// console.log('from environment: ', process.env.MONGODB_URI)
+import 'dotenv/config'
+
+export const env={
+  MSSQL_SERVER : process.env.MSSQL_SERVER,
+  MSSQL_USER : process.env.MSSQL_USER,
+  MSSQL_PASSWORD : process.env.MSSQL_PASSWORD,
+  MSSQL_DATABASE : process.env.MSSQL_DATABASE,
+
+  LOCAL_DEV_APP_HOST : process.env.LOCAL_DEV_APP_HOST,
+  LOCAL_DEV_APP_PORT : process.env.LOCAL_DEV_APP_PORT,
+
+  BUILD_MODE : process.env.BUILD_MODE,
+
+  AUTHOR : process.env.AUTHOR,
+  WEBSITE_DOMAIN_DEVELOPMENT : process.env.WEBSITE_DOMAIN_DEVELOPMENT,
+  WEBSITE_DOMAIN_PRODUCTION : process.env.WEBSITE_DOMAIN_PRODUCTION,
+
+  BREVO_API_KEY: process.env.BREVO_API_KEY,
+  ADMIN_EMAIL_ADDRESS: process.env.ADMIN_EMAIL_ADDRESS,
+  ADMIN_EMAIL_NAME: process.env.ADMIN_EMAIL_NAME,
+
+  ACCESS_TOKEN_SECRET_SIGNATURE: process.env.ACCESS_TOKEN_SECRET_SIGNATURE,
+  ACCESS_TOKEN_LIFE: process.env.ACCESS_TOKEN_LIFE,
+
+  REFRESH_TOKEN_SECRET_SIGNATURE: process.env.REFRESH_TOKEN_SECRET_SIGNATURE,
+  REFRESH_TOKEN_LIFE: process.env.REFRESH_TOKEN_LIFE
+}
